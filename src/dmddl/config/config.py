@@ -1,28 +1,42 @@
-from typing import Literal, Dict
-
-from openai import api_key
-from pydantic_settings import BaseSettings
-from pydantic import Field, field_validator
-from random import randint
-from dmddl.llm import OpenAI, Deepseek
+import dotenv
 
 
-ALLOWED_MODELS = ["Deepseek", "OpenAI"]
+def get_dotenv_path():
+    env_path = dotenv.find_dotenv()
+    if not env_path:
+        with open(".env", "x"):
+            pass
+    env_path = dotenv.find_dotenv()
+    return env_path
 
 
-class ApiKeysDict(dict):
+ENV_PATH = get_dotenv_path()
+
+class LLMSettings:
+    """
+    Class that represents .env llm settings (Singleton)
+    """
+    __instance = None
+    def __new__(cls, *args, **kwargs):
+        if cls.__instance is None:
+            cls.__instance = super(LLMSettings, cls).__new__(cls)
+        return cls.__instance
+
+    def __init__(self):
+        if len(dotenv.dotenv_values(ENV_PATH))<2:
+            dotenv.set_key(ENV_PATH, "DMDDL_CUR_PROVIDER", "")
+            dotenv.set_key(ENV_PATH, "DMDDL_LLM_KEY", "")
+
     def __setitem__(self, key, value):
-        if key in ALLOWED_MODELS:
-            return super().__setitem__(key, value)
-        else:
-            raise ValueError("LLM Provider not found")
+        dotenv.set_key(ENV_PATH, key, value)
 
+    def __getitem__(self, item):
+        return dotenv.get_key(ENV_PATH, key_to_get=item)
 
-class LLMConfig(BaseSettings):
-    llm_in_use:str | None
-    api_keys: ApiKeysDict = Field(default_factory=ApiKeysDict)
+    def __str__(self):
+        lines = []
+        for key, item in dotenv.dotenv_values().items():
+            lines.append(" = ".join([key, item]))
 
-
-config = LLMConfig(llm_in_use="Deepseek")
-config.api_keys['Deepseek'] = "sdwafczawdca"
-print(config.llm_in_use)
+        content = "\n".join(lines)
+        return content
