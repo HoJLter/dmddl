@@ -51,7 +51,7 @@ Skip circular dependencies or suggest fixes.
 
 Add -- WARNING comments for potential issues (e.g., missing ON DELETE CASCADE).
 
+Average records per table: [Small: 15 | Medium: 40 | Large: 60]
+
 User Input:
-[Paste DDL here]
-Average records per table: [Small: 10 | Medium: 100 | Large: 1000]
 '''
