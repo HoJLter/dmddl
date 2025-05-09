@@ -4,7 +4,7 @@ import dotenv
 def get_dotenv_path():
     env_path = dotenv.find_dotenv()
     if not env_path:
-        with open(".env", "x"):
+        with open("config/.env", "x"):
             pass
     env_path = dotenv.find_dotenv()
     return env_path
@@ -14,7 +14,7 @@ ENV_PATH = get_dotenv_path()
 
 class LLMSettings:
     """
-    Class that represents .env llm settings (Singleton)
+    Class that represents .env models settings (Singleton)
     """
     __instance = None
     def __new__(cls, *args, **kwargs):

@@ -1,12 +1,14 @@
 import questionary
-from config.config import LLMSettings
+from config.settings import LLMSettings
 from rich import print
+from rich.syntax import Syntax
 from rich.console import Console
-from llm.llm import openai_request
-from llm.prompt import prompt as base_prompt
+from models.llm import openai_request
+from models.prompt import prompt as base_prompt
 import argparse
 
-AVAILABLE_PROVIDERS = ["OpenAI", "Deepseek"]
+
+AVAILABLE_PROVIDERS = ["OpenAI"]
 
 
 def choose_provider(providers):
@@ -33,10 +35,16 @@ def make_test_query(provider, api_key):
 
 def make_query(provider, api_key, prompt):
     console = Console()
-    with console.status("[bold blue]Making query. Wait for result...") as status:
+    with console.status("[bold blue]Making query. Wait for result..."):
         if provider == "OpenAI":
             response = openai_request(base_prompt+prompt, api_key)
-            print(response)
+            return response
+        raise ValueError("LLM Provider not found")
+
+
+def write_output_file(data):
+    with open("output.txt", 'w') as file:
+        file.write(data)
 
 
 def set_parameters():
@@ -52,7 +60,7 @@ def set_parameters():
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", action="store_true")
-    parser.add_argument("-s", "--source", action="store_true")
+    parser.add_argument("-s", "--source")
 
     return parser.parse_args()
 
@@ -60,6 +68,7 @@ def get_args():
 def main():
     settings = LLMSettings()
     args = get_args()
+    console = Console()
 
     llm_provider = settings['DMDDL_CUR_PROVIDER']
     api_key = settings['DMDDL_LLM_KEY']
@@ -68,9 +77,22 @@ def main():
         set_parameters()
 
     if args.source:
-        print(args.source)
+        with open(args.source, "r", encoding='utf-8') as file:
+            user_prompt = file.read()
+        syntax = Syntax(user_prompt, 'sql', line_numbers=True)
+        console.print(syntax)
 
-    print(args)
+        confirmation = questionary.confirm(f"Do you wanna use this DDL script?").ask()
+
+        if confirmation:
+            response = make_query(provider=llm_provider,
+                                  api_key=api_key,
+                                  prompt=user_prompt)
+            write_output_file(response)
+            syntax = Syntax(response, 'sql', line_numbers=True)
+            console.print(syntax)
+            print("[green bold] Your DML script is ready! Check output.txt")
+
 
 if __name__ == '__main__':
     main()
