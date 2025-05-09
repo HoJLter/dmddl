@@ -6,9 +6,11 @@ from rich.console import Console
 from models.llm import openai_request
 from models.prompt import prompt as base_prompt
 import argparse
+import sys
 
 
 AVAILABLE_PROVIDERS = ["OpenAI"]
+sys.tracebacklimit = 10 # it makes errors more user-friendly (turn off for dev)
 
 
 def choose_provider(providers):
@@ -24,12 +26,12 @@ def ask_api_key():
 
 def make_test_query(provider, api_key):
     console = Console()
-    with console.status("[bold blue]Making test query") as status:
+    with console.status("[bold blue]Making test query"):
         if provider == "OpenAI":
             try:
                 response = openai_request("Hello! Its a test query :)", api_key)
                 print(f"\n[green bold]{response} \nAll done! Your api key is correct!")
-            except:
+            except KeyError:
                 print("Your api key is incorrect! Use -c (--config) to set another api key")
 
 
@@ -82,7 +84,7 @@ def main():
         syntax = Syntax(user_prompt, 'sql', line_numbers=True)
         console.print(syntax)
 
-        confirmation = questionary.confirm(f"Do you wanna use this DDL script?").ask()
+        confirmation = questionary.confirm("Do you wanna use this DDL script?").ask()
 
         if confirmation:
             response = make_query(provider=llm_provider,
