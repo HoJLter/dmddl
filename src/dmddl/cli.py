@@ -1,10 +1,10 @@
 import questionary
-from config.settings import LLMSettings
+from dmddl.config.settings import LLMSettings
 from rich import print
 from rich.syntax import Syntax
 from rich.console import Console
-from models.llm import openai_request
-from models.prompt import prompt as base_prompt
+from dmddl.models.llm import openai_request
+from dmddl.models.prompt import prompt as base_prompt
 import argparse
 import sys
 
