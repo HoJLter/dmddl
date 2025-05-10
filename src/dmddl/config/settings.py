@@ -4,7 +4,7 @@ import dotenv
 def get_dotenv_path():
     env_path = dotenv.find_dotenv()
     if not env_path:
-        with open("config/.env", "x"):
+        with open("config/.env", "w"):
             pass
     env_path = dotenv.find_dotenv()
     return env_path
