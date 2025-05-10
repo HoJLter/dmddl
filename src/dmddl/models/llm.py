@@ -19,13 +19,16 @@ def openai_request(prompt, api_key, proxies = None):
 
     if proxies:
         for proxy in proxies:
-            print(f"[yellow bold]\nUsing proxy: {proxy}")
-            req_proxies = {
-                "https": proxy
-            }
-            response = requests.post(url=url, headers=headers, json=data, proxies = req_proxies)
-            if response.status_code == 200:
-                break
+            try:
+                print(f"[yellow bold]Using proxy: {proxy}")
+                req_proxies = {
+                    "https": proxy
+                }
+                response = requests.post(url=url, headers=headers, json=data, proxies = req_proxies)
+                if response.status_code == 200:
+                    break
+            except:
+                pass
 
     else:
         response = requests.post(url=url, headers=headers, json=data)

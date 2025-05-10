@@ -1,6 +1,8 @@
 import asyncio
 
 import questionary
+from requests.exceptions import ProxyError
+
 from dmddl.config.settings import LLMSettings
 from rich import print
 from rich.syntax import Syntax
@@ -133,7 +135,9 @@ def main():
                     for proxy in proxies:
                         print(f"[yellow bold]- {proxy}")
                 else:
-                    print("[yellow bold] Proxy does not found :( \n Try again later. (it really helps)")
+                    print("[red bold] Proxy does not found :( \n Try again later. (it really helps)")
+
+
 
         confirmation, user_prompt = input_prompt_dialogue(args)
 
