@@ -1,6 +1,6 @@
 [project]
 name = "dmddl"
-version = "0.2.16"
+version = "0.2.18"
 description = "cli tool for creating insert script from ddl script"
 authors = [
     {name = "HoJLter",email = "hojlter.work@gmail.com"}
@@ -9,10 +9,12 @@ license = {text = "MIT License"}
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "pydantic (>=2.11.4,<3.0.0)",
-    "pydantic-settings (>=2.9.1,<3.0.0)",
     "aiohttp (>=3.11.18,<4.0.0)",
-    "bs4 (>=0.0.2,<0.0.3)"
+    "bs4 (>=0.0.2,<0.0.3)",
+    "rich (>=14.0.0,<15.0.0)",
+    "questionary (>=2.1.0,<3.0.0)",
+    "requests (>=2.32.3,<3.0.0)",
+    "dotenv (>=0.9.9,<0.10.0)"
 ]
 
 

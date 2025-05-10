@@ -26,11 +26,10 @@ async def test_request(url, proxy, session):
         pass
 
 
-async def get_good_proxies():
+async def get_valid_proxies():
     proxies = get_proxy_list()
     url = "https://platform.openai.com"
     async with aiohttp.ClientSession() as session:
         tasks = [test_request(url, proxy, session) for proxy in proxies]
         good_proxies = [proxy for proxy in await asyncio.gather(*tasks) if proxy]
         return good_proxies
-
