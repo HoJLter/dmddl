@@ -1,10 +1,10 @@
 import questionary
-from config.settings import LLMSettings
+from dmddl.config.settings import LLMSettings
 from rich import print
 from rich.syntax import Syntax
 from rich.console import Console
-from models.llm import openai_request
-from models.prompt import prompt as base_prompt
+from dmddl.models.llm import openai_request
+from dmddl.models.prompt import prompt as base_prompt
 import argparse
 
 
@@ -31,11 +31,14 @@ def ask_api_key():
 def make_query(provider, api_key, prompt):
     console = Console()
     with console.status("[bold blue]Making query. Wait for result..."):
-        if provider == "OpenAI":
-            response = openai_request(base_prompt+prompt, api_key)
-            return response
+        if provider:
+            if provider == "OpenAI":
+                response = openai_request(base_prompt+prompt, api_key)
+                return response
 
-        raise Exception("LLM Provider not found")
+            raise Exception("LLM Provider not found")
+        else:
+            raise Exception("Use -c (--config) to configurate app and set LLM provider.")
 
 
 def write_output_file(data):
@@ -53,10 +56,18 @@ def set_parameters():
     settings['DMDDL_LLM_KEY'] = api_key
 
 
+def set_proxy():
+    settings = LLMSettings()
+    proxy = questionary.text(message="Enter your proxy:\n").ask()
+
+    settings['DMDDL_PROXY'] = proxy
+
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", action="store_true")
     parser.add_argument("-s", "--source")
+    parser.add_argument("-p", "--proxy", action="store_true")
 
     return parser.parse_args()
 
@@ -73,11 +84,15 @@ def main():
     if not args.source and not args.config:
         print("[red bold]You must provide any arguments:\n"
               "-c (--config): opens settings menu\n"
-              "-s (--source): specify the input file")
-
+              "-s (--source): specify the input file"
+              "-p (--proxy):  specify proxy")
 
     if args.config:
         set_parameters()
+
+    if args.proxy:
+        set_proxy()
+
     if args.source:
         with open(args.source, "r", encoding='utf-8') as file:
             user_prompt = file.read()
@@ -91,12 +106,14 @@ def main():
                                            api_key=api_key,
                                            prompt=user_prompt)
             write_output_file(response)
-            syntax = Syntax(response, 'sql', line_numbers=True)
             print("\n\n[yellow bold]OUTPUT.TXT\n",)
-            console.print(syntax)
             if success:
+                syntax = Syntax(response, 'sql', line_numbers=True)
+                console.print(syntax)
                 print("[green bold] Your DML script is ready! Check output.txt")
             if not success:
+                syntax = Syntax(response, 'bash', line_numbers=True)
+                console.print(syntax)
                 print("[red bold] Error has occurred... Check output.txt")
 
 

@@ -1,12 +1,15 @@
 import dotenv
-
+import os
+from pathlib import Path
 
 def get_dotenv_path():
     env_path = dotenv.find_dotenv()
+
     if not env_path:
-        with open("config/.env", "w"):
-            pass
-    env_path = dotenv.find_dotenv()
+        env_dir = "config"
+        env_path = os.path.join(env_dir, ".env")
+        os.makedirs(env_dir, exist_ok=True)
+        Path(env_path).touch(exist_ok=True)
     return env_path
 
 
