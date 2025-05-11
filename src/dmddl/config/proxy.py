@@ -2,7 +2,6 @@ import asyncio
 from bs4 import BeautifulSoup
 import aiohttp
 import requests
-from rich import print
 from rich.console import Console
 
 
@@ -21,7 +20,7 @@ def get_proxy_list():
 
 async def is_valid_proxy(url, proxy, session):
     try:
-        async with session.get(url, proxy=proxy, timeout=5) as response:
+        async with session.get(url, proxy=proxy, timeout=5):
             return proxy
 
     except (aiohttp.ClientError, ConnectionResetError, asyncio.TimeoutError):

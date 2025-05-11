@@ -1,9 +1,5 @@
 import asyncio
-from idlelib.help import copy_strip
-
 import questionary
-from requests.exceptions import ProxyError
-
 from dmddl.config.settings import LLMSettings
 from rich import print
 from rich.syntax import Syntax
@@ -134,7 +130,7 @@ def main():
                 print("[green bold]\n\tVALID PROXIES")
                 for proxy in proxies:
                     print(f"[green bold]- {proxy}")
-            except:
+            except Exception:
                 pass
         confirmation, user_prompt = input_prompt_dialogue(args)
 

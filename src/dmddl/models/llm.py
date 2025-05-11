@@ -1,7 +1,4 @@
-from http.client import RemoteDisconnected
-
 import requests
-from requests.exceptions import ProxyError
 from rich import print
 
 def openai_request(prompt, api_key, console, proxies = None):
@@ -31,8 +28,8 @@ def openai_request(prompt, api_key, console, proxies = None):
                     response = requests.post(url=url, headers=headers, json=data, proxies = req_proxies)
                     if response.status_code == 200:
                         break
-                except:
-                    print(f"\n[red bold]Proxy error... Trying next proxy")
+                except Exception:
+                    print("\n[red bold]Proxy error... Trying next proxy")
         else:
             response = requests.post(url=url, headers=headers, json=data)
 
