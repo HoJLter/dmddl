@@ -10,7 +10,7 @@
 <img src=".github/dmddl%20logo_4.png" align="center">
 
 <h3 align="center">
-    CLI tool that generates insertion script from DDL
+    CLI tool for generation insertion script from DDL script (SQL)
 </h3>
 
 ---
@@ -59,3 +59,7 @@ If you have ideas for improving this project, please post them in issues.
 <br>
 (if i don't answer, you can email me)
 
+---
+<h3 align="center">
+    If you have any troubles, please tell about it in issues
+</h3>
