@@ -1,6 +1,6 @@
 [project]
 name = "dmddl"
-version = "0.2.18"
+version = "0.2.24"
 description = "cli tool for creating insert script from ddl script"
 authors = [
     {name = "HoJLter",email = "hojlter.work@gmail.com"}

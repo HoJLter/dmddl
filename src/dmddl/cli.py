@@ -1,4 +1,5 @@
 import asyncio
+from idlelib.help import copy_strip
 
 import questionary
 from requests.exceptions import ProxyError
@@ -34,15 +35,14 @@ def ask_api_key():
 
 def make_query(provider, api_key, prompt, proxies = None):
     console = Console()
-    with console.status("[bold blue]Making query. Wait for result..."):
-        if provider:
-            if provider == "OpenAI":
-                response = openai_request(prompt=base_prompt+prompt, api_key=api_key, proxies=proxies)
-                return response
+    if provider:
+        if provider == "OpenAI":
+            response = openai_request(prompt=base_prompt+prompt, api_key=api_key, proxies=proxies, console=console)
+            return response
 
-            raise Exception("LLM Provider not found")
-        else:
-            raise Exception("Use -c (--config) to configurate app and set LLM provider.")
+        raise Exception("LLM Provider not found")
+    else:
+        raise Exception("Use -c (--config) to configurate app and set LLM provider.")
 
 
 def write_output_file(data):
@@ -115,10 +115,10 @@ def main():
 
 
     if not args.source and not args.config and not args.proxy:
-        print("[red bold]You must provide any arguments:\n"
+        print("[red bold]You must provide some arguments:\n"
               "-c (--config): opens settings menu\n"
-              "-s (--source): specify the input file"
-              "-sp (--proxy): specify the input file (request with proxy)")
+              "-s (--source): specify the input file\n"
+              "-ps (--proxy-source): specify the input file (request with proxy)")
 
     if args.config:
         set_parameters()
@@ -128,17 +128,14 @@ def main():
         proxies = None
 
         if args.proxy:
-            with console.status("[blue bold] Finding valid proxies..."):
-                proxies = asyncio.run(get_valid_proxies())
-                if proxies:
-                    print("[bold blue] Proxy found!")
-                    for proxy in proxies:
-                        print(f"[yellow bold]- {proxy}")
-                else:
-                    print("[red bold] Proxy does not found :( \n Try again later. (it really helps)")
-
-
-
+            console = Console()
+            try:
+                proxies = asyncio.run(get_valid_proxies(console))
+                print("[green bold]\n\tVALID PROXIES")
+                for proxy in proxies:
+                    print(f"[green bold]- {proxy}")
+            except:
+                pass
         confirmation, user_prompt = input_prompt_dialogue(args)
 
         if confirmation:
